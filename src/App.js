@@ -1,20 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.css";
+import logo from './assets/task-manager-logo.png'
+import { UilTrashAlt } from '@iconscout/react-unicons'
 
 const TaskManagementApp = () => {
   const [tasks, setTasks] = useState([]);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState("all");
 
   // Fetch tasks from API or local storage
   useEffect(() => {
     // Simulated fetch or storage retrieval
     const storedTasks = [
-      { id: 1, title: 'Task 1', description: 'Task 1 description', dueDate: '2023-07-05', priority: 'high', completed: false },
-      { id: 2, title: 'Task 2', description: 'Task 2 description', dueDate: '2023-07-06', priority: 'medium', completed: false },
-      { id: 3, title: 'Task 3', description: 'Task 3 description', dueDate: '2023-07-07', priority: 'low', completed: true }
+      {
+        id: 1,
+        title: "Task 1",
+        description: "Task 1 description",
+        dueDate: "2023-07-05",
+        priority: "high",
+        completed: false,
+      },
+      {
+        id: 2,
+        title: "Task 2",
+        description: "Task 2 description",
+        dueDate: "2023-07-06",
+        priority: "medium",
+        completed: false,
+      },
+      {
+        id: 3,
+        title: "Task 3",
+        description: "Task 3 description",
+        dueDate: "2023-07-07",
+        priority: "low",
+        completed: true,
+      },
     ];
     setTasks(storedTasks);
   }, []);
 
+ 
   // Add new task
   const addTask = (title, description, dueDate, priority) => {
     const newTask = {
@@ -23,22 +48,22 @@ const TaskManagementApp = () => {
       description,
       dueDate,
       priority,
-      completed: false
+      completed: false,
     };
     setTasks([...tasks, newTask]);
   };
 
   // Filter tasks
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'all') return true;
-    if (filter === 'completed') return task.completed;
-    if (filter === 'pending') return !task.completed;
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === "all") return true;
+    if (filter === "completed") return task.completed;
+    if (filter === "pending") return !task.completed;
     return true;
   });
 
   // Toggle task completion
   const toggleTaskCompletion = (taskId) => {
-    const updatedTasks = tasks.map(task => {
+    const updatedTasks = tasks.map((task) => {
       if (task.id === taskId) {
         return { ...task, completed: !task.completed };
       }
@@ -47,29 +72,50 @@ const TaskManagementApp = () => {
     setTasks(updatedTasks);
   };
 
+  const deleteTask = (taskId) => {
+    const updatedTasks = tasks.filter((task) => task.id !== taskId);
+    setTasks(updatedTasks);
+  };
+
   return (
-    <div>
-      <h1>Task Management App</h1>
-      <div>
-        <label>Filter:</label>
-        <select value={filter} onChange={e => setFilter(e.target.value)}>
-          <option value="all">All</option>
+    <div class="container">
+      <div class="heading">
+        <img src={logo} alt="Logo" />
+        <h2 class="text-center">Task Management</h2>
+      </div>
+      <div class="filter bg-primary-subtle">
+        <label><strong>Filter :</strong></label>
+        <select
+          class="form-select"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          <option selected value="all">
+            All
+          </option>
           <option value="completed">Completed</option>
           <option value="pending">Pending</option>
         </select>
       </div>
-      <div>
-        <h2>Add New Task</h2>
+
+      <div class="new-task bg-primary-subtle">
+        <h6>Add New Task</h6>
         <TaskForm addTask={addTask} />
       </div>
-      <div>
-        <h2>Task List</h2>
+
+      <div class="task-list bg-primary-subtle">
+        <h6>Task List</h6>
         {filteredTasks.length > 0 ? (
-          <ul>
-            {filteredTasks.map(task => (
-              <TaskItem key={task.id} task={task} toggleTaskCompletion={toggleTaskCompletion} />
+          <ol class="list-group list-group-numbered">
+            {filteredTasks.map((task) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                toggleTaskCompletion={toggleTaskCompletion}
+                deleteTask={deleteTask}
+              />
             ))}
-          </ul>
+          </ol>
         ) : (
           <p>No tasks found.</p>
         )}
@@ -79,55 +125,114 @@ const TaskManagementApp = () => {
 };
 
 const TaskForm = ({ addTask }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const [priority, setPriority] = useState('low');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [priority, setPriority] = useState("low");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     addTask(title, description, dueDate, priority);
-    setTitle('');
-    setDescription('');
-    setDueDate('');
-    setPriority('low');
+    setTitle("");
+    setDescription("");
+    setDueDate("");
+    setPriority("low");
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>Title:</label>
-      <input type="text" value={title} onChange={e => setTitle(e.target.value)} required />
-      <label>Description:</label>
-      <textarea value={description} onChange={e => setDescription(e.target.value)} required></textarea>
-      <label>Due Date:</label>
-      <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} required />
-      <label>Priority:</label>
-      <select value={priority} onChange={e => setPriority(e.target.value)}>
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-      </select>
-      <button type="submit">Add Task</button>
+      <div class="row g-4">
+        <div className="col-md">
+          <div class="form-floating">
+            <input
+              class="form-control"
+              id="floatingInput"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+            <label for="floatingInput">Title :</label>
+          </div>
+        </div>
+        <div className="col-md">
+          <div className="form-floating">
+            <textarea
+              class="form-control"
+              id="floatingTextarea"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            ></textarea>
+            <label for="floatingTextarea">Description :</label>
+          </div>
+        </div>
+        <div className="col-md">
+          <div className="form-floating">
+          <input
+          class="form-control"
+          id="floatingInput"
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              required
+            />
+            <label for="floatingInput">Due Date :</label>
+           
+          </div>
+        </div>
+        <div className="col-md">
+          <div className="form-floating">
+           
+            <select
+              class="form-select"
+              id="floatingSelect" 
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+            <label for="floatingSelect">Priority :</label>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-outline-dark">Add Task</button>
     </form>
   );
 };
 
-const TaskItem = ({ task, toggleTaskCompletion }) => {
+const TaskItem = ({ task, toggleTaskCompletion, deleteTask }) => {
   const { id, title, description, dueDate, priority, completed } = task;
 
   const handleToggleCompletion = () => {
     toggleTaskCompletion(id);
   };
 
+  const handleDeleteTask = () => {
+    deleteTask(id);
+  };
+
   return (
-    <li>
-      <input type="checkbox" checked={completed} onChange={handleToggleCompletion} />
-      <strong>{title}</strong>
-      <p>Description: {description}</p>
-      <p>Due Date: {dueDate}</p>
-      <p>Priority: {priority}</p>
+    <li class="list-group-item bg-light">
+      <input
+        class="form-check-input me-1"
+        id="firstCheckbox"
+        type="checkbox"
+        checked={completed}
+        onChange={handleToggleCompletion}
+      />
+      <label class="form-check-label" for="firstCheckbox"><strong>{title}</strong></label>
+      <p><strong>Description: </strong> {description}</p>
+      <p><strong>Due Date: </strong> {dueDate}</p>
+      <p><strong>Priority: </strong>   {priority}</p>
+      <div class="delete">
+      <UilTrashAlt onClick={handleDeleteTask}  color="#61DAFB" />
+      </div>
     </li>
   );
-};
+};  
 
 export default TaskManagementApp;
