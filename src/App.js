@@ -7,37 +7,17 @@ const TaskManagementApp = () => {
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState("all");
 
-  // Fetch tasks from API or local storage
   useEffect(() => {
-    // Simulated fetch or storage retrieval
-    const storedTasks = [
-      {
-        id: 1,
-        title: "Task 1",
-        description: "Task 1 description",
-        dueDate: "2023-07-05",
-        priority: "high",
-        completed: false,
-      },
-      {
-        id: 2,
-        title: "Task 2",
-        description: "Task 2 description",
-        dueDate: "2023-07-06",
-        priority: "medium",
-        completed: false,
-      },
-      {
-        id: 3,
-        title: "Task 3",
-        description: "Task 3 description",
-        dueDate: "2023-07-07",
-        priority: "low",
-        completed: true,
-      },
-    ];
-    setTasks(storedTasks);
+    const storedTasks = localStorage.getItem('tasks');
+    if (storedTasks) {
+      const parsedTasks = JSON.parse(storedTasks);
+      setTasks(parsedTasks);
+    }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
  
   // Add new task
@@ -48,7 +28,7 @@ const TaskManagementApp = () => {
       description,
       dueDate,
       priority,
-      completed: false,
+      completed: false
     };
     setTasks([...tasks, newTask]);
   };
@@ -63,7 +43,7 @@ const TaskManagementApp = () => {
 
   // Toggle task completion
   const toggleTaskCompletion = (taskId) => {
-    const updatedTasks = tasks.map((task) => {
+    const updatedTasks = tasks.map(task => {
       if (task.id === taskId) {
         return { ...task, completed: !task.completed };
       }
@@ -72,8 +52,9 @@ const TaskManagementApp = () => {
     setTasks(updatedTasks);
   };
 
+  // Delete task
   const deleteTask = (taskId) => {
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
+    const updatedTasks = tasks.filter(task => task.id !== taskId);
     setTasks(updatedTasks);
   };
 
